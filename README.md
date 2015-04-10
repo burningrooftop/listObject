@@ -20,6 +20,12 @@ print #list list$(" ") ' print list contents space delimited
 
 ### Functions
 
+#### debug$()
+Returns "List".
+
+#### isnull()
+Returns 0.
+
 #### new(delim$)
 Initialise the list. Empties the list and set the list delimiter to *delim$* (which must not be empty). Returns 1 on success or 0 on failure.
 
@@ -57,13 +63,13 @@ Add *item$* to the start of the list.
 Add *item$* to the end of the list.
 
 #### addAll(#list)
-Add all items in the list *#list#* to the end of the list.
+Add all items in the list object *#list* to the end of the list.
 
 #### addAllFirst(#list)
-All add items in the list *#list* to the start of the list.
+All add items in the list object *#list* to the start of the list.
 
 #### addAllLast(#list)
-Add all items in the list *#list#* to the end of the list.
+Add all items in the list object *#list* to the end of the list.
 
 #### remove(item$)
 Remove the first occurence of *item$* in the list. Returns 1 on success or 0 if not found.
