@@ -16,13 +16,12 @@ function isnull()
   isnull = 0
 end function
 
-function new(list$, delim$)
+function new(delim$)
   if delim$ = "" then
     LastError$ = "Delimiter cannot be empty."
   else
     Delim$ = delim$
-    List$ = list$
-    if right$(List$, len(Delim$)) <> Delim$ then List$ = List$ + Delim$
+    List$ = ""
     new = 1
   end if
 end function
@@ -31,8 +30,17 @@ function delimiter$()
   delimiter$ = Delim$
 end function
 
-function list$()
-  list$ = List$
+function list$(delim$)
+  ' Return list items delimited by delim$
+  i = 1
+  item$ = word$(List$, i, Delim$)
+  while item$ <> ""
+    if item$ = Delim$ then item$ = ""
+    list$ = list$ + d$ + item$
+    d$ = delim$
+    i = i + 1
+    item$ = word$(List$, i, Delim$)
+  wend
 end function
 
 function lasterror$()
@@ -56,15 +64,54 @@ function item$(n)
   if item$ = Delim$ then item$ = ""
 end function
 
+function first$()
+  ' Return the first item in the list
+  first$ = word$(List$, 1, Delim$)
+end function
+
 function last$()
   ' Return the last item in the list
   last$ = word$(List$, count(), Delim$)
 end function
 
 function add(item$)
-  ' Add an item to the list
-  List$ = List$ + item$
-  if right$(List$, len(Delim$)) <> Delim$ then List$ = List$ + Delim$
+  ' Add item(s) to the end of the list
+  add = addLast(item$)
+end function
+
+function addAll(#source)
+  ' Add all items in #source to the end of the list
+  addAll = addAllLast(#source)
+end function
+
+function addAllFirst(#source)
+  ' Add all items in #source to the start of the list
+  if not(#source isnull()) then
+    for i = #source count() to 1 step -1
+      addAllFirst = addFirst(#source item$(i))
+    next i
+  end if
+end function
+
+function addAllLast(#source)
+  ' Add all items in #source to the end of the list
+  if not(#source isnull()) then
+    for i = 1 to #source count()
+      addAllLast = addLast(#source item$(i))
+    next i
+  end if
+end function
+
+function addFirst(item$)
+  ' Add item(s) to the start of the list
+  List$ = item$ + Delim$ + List$
+  addFirst = 1
+end function
+
+function addLast(item$)
+  ' Add item(s) to the end of the list
+  List$ = List$ + item$ + Delim$
+  addLast = 1
 end function
 
 function find(item$)
@@ -81,7 +128,54 @@ function find(item$)
     i$ = word$(List$, i, Delim$)
   wend
 end function
-  
+
+function findNext(item$, skip)
+  ' Return the index of item in the list skipping some items
+  i = 1
+  i$ = word$(List$, i, Delim$)
+  while i$ <> ""
+    if i$ = Delim$ then i$ = ""
+    if item$ = i$ and i > skip then
+      findNext = i
+      exit while
+    end if
+    i = i + 1
+    i$ = word$(List$, i, Delim$)
+  wend
+end function
+
+' ------------------
+' Removing functions
+' ------------------
+
+function removeIndex(n)
+  i = 1
+  i$ = word$(List$, i, Delim$)
+  while i$ <> ""
+    if i$ = Delim$ then i$ = ""
+    if i = n then
+      removeIndex = 1
+    else
+      newList$ = newList$ + i$ + Delim$
+    end if
+    i = i + 1
+    i$ = word$(List$, i, Delim$)
+  wend
+  if removeIndex = 0 then
+    LastError$ = "Item not found."
+  else
+    List$ = newList$
+  end if
+end function
+
+function removeFirst()
+  removeFirst = removeIndex(1)
+end function
+
+function removeLast()
+  removeLast = removeIndex(count())
+end function
+
 function remove(item$)
   ' Remove an item from the list
   i = 1
